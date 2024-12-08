@@ -1,6 +1,6 @@
 import { getJoyasModel, getJoyasFiltroModel } from "../models/joyasModel.js";
 
-export const getJoyas = async (req, res) => {
+export const getJoyasController = async (req, res) => {
   try {
     let { limit, page, order_by } = req.query;
 
@@ -25,7 +25,7 @@ export const getJoyas = async (req, res) => {
   }
 };
 
-export const getFiltros = async (req, res) => {
+export const getFiltrosController = async (req, res) => {
   try {
     const { precio_min, precio_max, categoria, metal } = req.query;
     const result = await getJoyasFiltroModel({

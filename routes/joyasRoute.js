@@ -1,8 +1,11 @@
 import { Router } from "express";
-import { getJoyas, getFiltros } from "../controllers/joyasController.js";
+import {
+  getJoyasController,
+  getFiltrosController,
+} from "../controllers/joyasController.js";
 const router = Router();
 
-router.get("/", getJoyas);
-router.get("/filtros", getFiltros);
+router.get("/", getJoyasController);
+router.get("/filtros", getFiltrosController);
 
 export default router;
