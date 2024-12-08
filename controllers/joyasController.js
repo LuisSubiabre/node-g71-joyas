@@ -1,10 +1,9 @@
-import { getJoyasModel } from "../models/joyasModel.js";
+import { getJoyasModel, getJoyasFiltroModel } from "../models/joyasModel.js";
 
 export const getJoyas = async (req, res) => {
   try {
     let { limit, page, order_by } = req.query;
 
-    console.log("limit", limit);
     if (limit === undefined) {
       limit = 2;
     }
@@ -20,21 +19,65 @@ export const getJoyas = async (req, res) => {
     return res.json(HATEOAS);
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: "Ocurrió un error en el servidor." });
+    return res
+      .status(500)
+      .json({ error: `Error al obtener las joyas: ${error.message}` });
   }
 };
 
-export const getFiltros = (req, res, { limit = 10 }) => {
-  res.send("Filtros");
+export const getFiltros = async (req, res) => {
+  try {
+    const { precio_min, precio_max, categoria, metal } = req.query;
+    const result = await getJoyasFiltroModel({
+      precio_min,
+      precio_max,
+      categoria,
+      metal,
+    });
+    if (result.error) {
+      return res.status(404).json(result);
+    }
+    const HATEOAS = getJoyasFiltroHateoas(result);
+    return res.json(HATEOAS);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ error: `Error al obtener las joyas: ${error.message}` });
+  }
 };
 
-/* HATEOAS */
+/* HATEOAS JOYAS */
 export const getJoyasHateoas = (joyas) => {
   const results = joyas.map((j) => {
     return {
       id: j.id,
       name: j.nombre,
-      stok: j.stock,
+      stock: j.stock,
+      precio: j.precio,
+      categoria: j.categoria,
+      metal: j.metal,
+      href: `http://localhost:3000/joyas/${j.id}`,
+    };
+  });
+
+  const total = joyas.length;
+  return {
+    total,
+    results,
+  };
+};
+
+/* HATEOAS JOYAS FILTRO */
+export const getJoyasFiltroHateoas = (joyas) => {
+  const results = joyas.map((j) => {
+    return {
+      id: j.id,
+      name: j.nombre,
+      stock: j.stock,
+      precio: j.precio,
+      categoria: j.categoria,
+      metal: j.metal,
       href: `http://localhost:3000/joyas/${j.id}`,
     };
   });
